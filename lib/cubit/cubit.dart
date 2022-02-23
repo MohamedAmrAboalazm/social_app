@@ -7,6 +7,7 @@ import 'package:social_app/cubit/states.dart';
 import 'package:social_app/models/Social_user_model.dart';
 import 'package:social_app/moduels/chats_screen.dart';
 import 'package:social_app/moduels/feeds_screen.dart';
+import 'package:social_app/moduels/newpost_screen.dart';
 import 'package:social_app/moduels/settings_screen.dart';
 import 'package:social_app/moduels/users_screen.dart';
 import 'package:social_app/shared/styles/constants.dart';
@@ -42,6 +43,7 @@ class SocialCubit extends Cubit<SocialState>{
   List<Widget> bottomScreens = [
     FeedsScreen(),
     ChatsScreen(),
+    NewPostScreen(),
     UsersScreen(),
     SettingsScreen(),
 
@@ -49,6 +51,7 @@ class SocialCubit extends Cubit<SocialState>{
   List<String> Titles = [
     "Home",
     "Chats",
+    "Post",
     "Users",
     "Settings",
 
@@ -64,6 +67,10 @@ class SocialCubit extends Cubit<SocialState>{
       label: "Chats",
     ),
     BottomNavigationBarItem(
+      icon: Icon(IconBroken.Upload),
+      label: "Post",
+    ),
+    BottomNavigationBarItem(
       icon: Icon(IconBroken.Location),
       label: "Users",
     ),
@@ -73,9 +80,14 @@ class SocialCubit extends Cubit<SocialState>{
     ),
   ];
   void changeIndex(int index) {
-
-      CurrentIndex = index;
-      emit(SocialChangeBottomNavState());
+     if(index==2)
+       {
+         emit(SocialNewPostState());
+       }
+     else {
+       CurrentIndex = index;
+       emit(SocialChangeBottomNavState());
+     }
     }
   }
 
