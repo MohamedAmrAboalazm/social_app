@@ -2,6 +2,7 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/cubit/cubit.dart';
 import 'package:social_app/moduels/register/social_register_screen.dart';
 import 'package:social_app/network/local/cache_helper.dart';
 import 'package:social_app/shared/components.dart';
@@ -105,6 +106,7 @@ class SocialLoginScreen extends StatelessWidget {
                             {
                                SocialLoginCubit.get(context)
                                .userLogin(email: emailcontroller.text, password: passwordcontroller.text);
+
 
                             }
 

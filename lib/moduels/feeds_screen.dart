@@ -1,65 +1,86 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/cubit/cubit.dart';
+import 'package:social_app/cubit/states.dart';
+import 'package:social_app/models/post_model.dart';
 import 'package:social_app/shared/styles/icon_broken.dart';
 
 class FeedsScreen extends StatelessWidget {
+
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          Card(
-            clipBehavior: Clip.antiAliasWithSaveLayer,
-            margin: EdgeInsets.all(8),
-            elevation: 10,
-            child: Stack(
-              alignment: AlignmentDirectional.bottomEnd,
+    return BlocConsumer<SocialCubit,SocialState>(
+      listener: (context, state){},
+      builder: (context, state) {
+        return ConditionalBuilder(
+          condition: SocialCubit.get(context).posts.length>0&&SocialCubit.get(context).userModel!=null,
+          builder: (context) => SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
               children: [
-                Image(
-                  image: NetworkImage(
-                      "https://img.freepik.com/free-photo/positive-african-american-girl-points-thumb-demonstrates-copy-space-blank-pink-wall-has-happy-friendly-expression-dressed-casually-poses-indoor-suggests-going-right-says-follow-this-direction_273609-42167.jpg?size=626&ext=jpg&uid=R64849170&ga=GA1.2.89529548.1645201593"),
-                  fit: BoxFit.cover,
-                  height: 200,
-                  width: double.infinity,
+                Card(
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  margin: EdgeInsets.all(8),
+                  elevation: 10,
+                  child: Stack(
+                    alignment: AlignmentDirectional.bottomEnd,
+                    children: [
+                      Image(
+                        image: NetworkImage(
+                            "https://img.freepik.com/free-photo/positive-african-american-girl-points-thumb-demonstrates-copy-space-blank-pink-wall-has-happy-friendly-expression-dressed-casually-poses-indoor-suggests-going-right-says-follow-this-direction_273609-42167.jpg?size=626&ext=jpg&uid=R64849170&ga=GA1.2.89529548.1645201593"),
+                        fit: BoxFit.cover,
+                        height: 200,
+                        width: double.infinity,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text("communicate with friends",
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle1!
+                                .copyWith(color: Colors.white)),
+                      ),
+                    ],
+                  ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("communicate with friends",
-                      style: Theme.of(context)
-                          .textTheme
-                          .subtitle1!
-                          .copyWith(color: Colors.white)),
-                ),
+                ListView.separated(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) => buildPostItem(SocialCubit.get(context).posts[index],index,context),
+                    separatorBuilder: (context, index) => SizedBox(height: 5,),
+                    itemCount: SocialCubit.get(context).posts.length),
+                SizedBox(height:5),
               ],
             ),
           ),
-          ListView.separated(
-            shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) => buildPostItem(context),
-              separatorBuilder: (context, index) => SizedBox(height: 5,),
-              itemCount: 5),
-          SizedBox(height:5),
-        ],
-      ),
+          fallback: (context) => Center(child: CircularProgressIndicator()),
+        );
+      },
     );
   }
 
-  Widget buildPostItem(context) =>
-      Card(
+
+
+
+
+  Widget buildPostItem(PostModel model,index,context) => Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
         margin: EdgeInsets.symmetric(horizontal: 8),
         elevation: 5,
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: NetworkImage(
-                        "https://img.freepik.com/free-photo/young-beautiful-model-posing_155003-29554.jpg?w=996"),
+                    backgroundImage: NetworkImage(model.image.toString()),
                   ),
                   SizedBox(
                     width: 15,
@@ -70,7 +91,7 @@ class FeedsScreen extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Text("Mohamed Amr"),
+                            Text(model.name.toString()),
                             SizedBox(
                               width: 3,
                             ),
@@ -85,7 +106,7 @@ class FeedsScreen extends StatelessWidget {
                           height: 2,
                         ),
                         Text(
-                          "February 22,2022 at 12:00 pm",
+                          model.dateTime.toString(),
                           style: Theme.of(context).textTheme.caption,
                         ),
                       ],
@@ -107,11 +128,11 @@ class FeedsScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                "Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+              model.text.toString(),
                 style: Theme.of(context).textTheme.subtitle1,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
+                padding: const EdgeInsets.symmetric(vertical: 2),
                 child: Container(
                   width: double.infinity,
                   child: Wrap(
@@ -174,6 +195,7 @@ class FeedsScreen extends StatelessWidget {
                   ),
                 ),
               ),
+              if(model.postImage!="")
               Container(
                 height: 150,
                 width: double.infinity,
@@ -182,7 +204,7 @@ class FeedsScreen extends StatelessWidget {
                     image: DecorationImage(
                         fit: BoxFit.cover,
                         image: NetworkImage(
-                            "https://img.freepik.com/free-photo/positive-african-american-girl-points-thumb-demonstrates-copy-space-blank-pink-wall-has-happy-friendly-expression-dressed-casually-poses-indoor-suggests-going-right-says-follow-this-direction_273609-42167.jpg?size=626&ext=jpg&uid=R64849170&ga=GA1.2.89529548.1645201593"))),
+                          model.postImage.toString()))),
               ),
               SizedBox(
                 height: 5,
@@ -252,7 +274,8 @@ class FeedsScreen extends StatelessWidget {
                           CircleAvatar(
                             radius: 18,
                             backgroundImage: NetworkImage(
-                                "https://img.freepik.com/free-photo/young-beautiful-model-posing_155003-29554.jpg?w=996"),
+                                SocialCubit.get(context).userModel!.image.toString()
+                                ),
                           ),
                           SizedBox(
                             width: 15,
@@ -269,7 +292,9 @@ class FeedsScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsetsDirectional.only(end: 10),
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        SocialCubit.get(context).likePost(SocialCubit.get(context).postId[index]);
+                      },
                       child: Row(
                         children: [
                           Icon(

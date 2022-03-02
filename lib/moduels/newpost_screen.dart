@@ -46,8 +46,7 @@ class NewPostScreen extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: NetworkImage(
-                        "https://img.freepik.com/free-photo/young-beautiful-model-posing_155003-29554.jpg?w=996"),
+                    backgroundImage: NetworkImage(SocialCubit.get(context).userModel!.image.toString()),
                   ),
                   SizedBox(
                     width: 15,

@@ -298,11 +298,49 @@ FirebaseFirestore.instance
       emit(SocialCreatePostErorrState());
     });
   }
+  List<PostModel> posts=[];
+  List<String> postId=[];
+  void getPosts(){
+    emit(SocialGetPostsLoadingState());
+   FirebaseFirestore
+       .instance
+       .collection("posts")
+       .get()
+       .then((value) {
+         value.docs.forEach((element) {
+           postId.add(element.id);
+           posts.add(PostModel.fromJson(element.data()));
+
+         });
+         emit(SocialGetPostsSuccessState());
+   })
+       .catchError((erorr){
+         emit(SocialGetPostsErorrState(erorr));
+   });
+  }
 void removePostImage()
 {
   postImage=null;
   emit(SocialRemovePostImageState());
 }
+
+  void likePost(String postId)
+  {
+    FirebaseFirestore
+        .instance
+        .collection("posts")
+        .doc(postId)
+        .collection("likes")
+        .doc(userModel!.uId.toString())
+        .set({"like":true,})
+        .then((value) {
+
+          emit(SocialLikePostSuccessState());
+    })
+        .catchError((erorr){
+      emit(SocialLikePostErorrState(erorr));
+    });
   }
 
+  }
 
