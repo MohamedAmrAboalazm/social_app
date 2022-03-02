@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/cubit/cubit.dart';
 import 'package:social_app/cubit/states.dart';
-import 'package:social_app/models/Social_user_model.dart';
 import 'package:social_app/shared/components.dart';
 import 'package:social_app/shared/styles/icon_broken.dart';
+
+import 'edit_profile_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   @override
@@ -13,7 +14,7 @@ class SettingsScreen extends StatelessWidget {
       listener: (context, state) {},
       builder: (context, state)
       {
-            var userModel=SocialCubit.get(context).model;
+            var userModel=SocialCubit.get(context).userModel;
            return  Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -52,7 +53,8 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 5,),
+              SizedBox(
+                height: 5,),
               Text(userModel!.name.toString(), style: Theme
                   .of(context)
                   .textTheme
@@ -145,7 +147,9 @@ class SettingsScreen extends StatelessWidget {
                 children: [
                   Expanded(child: OutlinedButton(onPressed: (){}, child: Text("Add photos"))),
              SizedBox(width: 10,),
-             OutlinedButton(onPressed: (){}, child:Icon(IconBroken.Edit,size: 16,)),
+             OutlinedButton(onPressed: (){
+               navigateTo(context, EditProfileScreen());
+             }, child:Icon(IconBroken.Edit,size: 16 ,)),
                 ],
               ),
             ],

@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:social_app/moduels/login/social_login_screen.dart';
 import 'package:social_app/network/local/cache_helper.dart';
 import 'package:social_app/shared/styles/colors.dart';
+import 'package:social_app/shared/styles/icon_broken.dart';
 
 
 Widget buildArticleItem(article,context) => Padding(
@@ -109,9 +110,22 @@ Widget defaultButton({String? text,required void Function()? onPressed,})=>Conta
     borderRadius: BorderRadius.circular(5),
   ),
   child: MaterialButton(
+    
       onPressed: onPressed,
     child: Text(text!.toUpperCase(),style:TextStyle(color: Colors.white),),
   ),
+);
+
+PreferredSizeWidget defaultAppBar({required BuildContext context, String? title, List<Widget>? actions})
+=>AppBar(
+  titleSpacing: 0.0,
+  leading: IconButton(
+    icon:Icon(IconBroken.Arrow___Left_2),
+    onPressed: (){Navigator.pop(context);
+    },
+  ),
+  title: Text(title!),
+  actions: actions,
 );
 
 void navigateTo(context,widget)=>Navigator.push(

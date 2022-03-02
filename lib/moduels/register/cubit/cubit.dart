@@ -35,7 +35,13 @@ class SocialRegisterCubit extends Cubit<SocialRegisterState>{
   }
   void userCreate({required String name,required String email,required String phone,required String uId,required})
   {
-    SocialUserModel model=SocialUserModel(email:email,phone: phone,name: name,uId: uId,isEmailVerified: false,bio:"enter Your bio",
+    SocialUserModel model=SocialUserModel(
+    email:email,
+    phone: phone,
+    name: name,
+    uId: uId,
+    isEmailVerified: false,
+     bio:"enter Your bio",
   image: "https://img.freepik.com/free-photo/portrait-young-beautiful-playful-woman-with-bun-posing_176420-12392.jpg?w=1060",
   cover: "https://img.freepik.com/free-photo/positive-african-american-girl-points-thumb-demonstrates-copy-space-blank-pink-wall-has-happy-friendly-expression-dressed-casually-poses-indoor-suggests-going-right-says-follow-this-direction_273609-42167.jpg?size=626&ext=jpg&uid=R64849170&ga=GA1.2.89529548.1645201593");
     FirebaseFirestore.instance
