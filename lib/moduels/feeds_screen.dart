@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/cubit/cubit.dart';
 import 'package:social_app/cubit/states.dart';
 import 'package:social_app/models/post_model.dart';
+import 'package:social_app/moduels/comment_screen.dart';
+import 'package:social_app/shared/components.dart';
 import 'package:social_app/shared/styles/icon_broken.dart';
 
 class FeedsScreen extends StatelessWidget {
@@ -226,7 +230,7 @@ class FeedsScreen extends StatelessWidget {
                             width: 5,
                           ),
                           Text(
-                            "500",
+                            SocialCubit.get(context).Likes[index].toString(),
                             style: Theme.of(context).textTheme.caption,
                           )
                         ],
@@ -249,7 +253,7 @@ class FeedsScreen extends StatelessWidget {
                             width: 5,
                           ),
                           Text(
-                            "200 comment",
+                            "0 comment",
                             style: Theme.of(context).textTheme.caption,
                           )
                         ],
@@ -286,7 +290,9 @@ class FeedsScreen extends StatelessWidget {
                           )
                         ],
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        SocialCubit.get(context).CommentPost(SocialCubit.get(context).postId[index]);
+                      },
                     ),
                   ),
                   Padding(
