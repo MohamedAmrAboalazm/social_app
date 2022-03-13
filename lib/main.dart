@@ -8,7 +8,6 @@ import 'package:social_app/shared/bloc_observer.dart';
 import 'package:social_app/shared/styles/constants.dart';
 import 'package:social_app/shared/styles/themes.dart';
 import 'package:social_app/social_layout.dart';
-
 import 'network/local/cache_helper.dart';
 
 void main() async{

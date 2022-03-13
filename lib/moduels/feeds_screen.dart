@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/cubit/cubit.dart';
 import 'package:social_app/cubit/states.dart';
 import 'package:social_app/models/post_model.dart';
-import 'package:social_app/moduels/comment_screen.dart';
-import 'package:social_app/shared/components.dart';
 import 'package:social_app/shared/styles/icon_broken.dart';
 
 class FeedsScreen extends StatelessWidget {
@@ -18,7 +15,9 @@ class FeedsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SocialCubit,SocialState>(
-      listener: (context, state){},
+      listener: (context, state){
+
+      },
       builder: (context, state) {
         return ConditionalBuilder(
           condition: SocialCubit.get(context).posts.length>0&&SocialCubit.get(context).userModel!=null,
