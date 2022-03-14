@@ -279,7 +279,7 @@ FirebaseFirestore.instance
     emit(SocialCreatePostLoadingState());
     PostModel model=PostModel(
       name: userModel!.name,
-      image:userModel!.image ,
+      image:userModel!.image,
       uId: userModel!.uId,
       dateTime: dateTime,
       text: text,
@@ -393,12 +393,15 @@ void removePostImage()
    }
 
    void sendMessage({
-     required String text,
-     required String? receiverId,
-     required String datetime,
+      String? text,
+      String? receiverId,
+      String? datetime,
+     String? chatImage,
+
+
    })
    {
-     MessageModel model=MessageModel(text: text,receiveruId: receiverId,senderuId: userModel!.uId,dateTime: datetime);
+     MessageModel model=MessageModel(text: text,receiveruId: receiverId,senderuId: userModel!.uId,dateTime: datetime,chatImage:chatImage);
      FirebaseFirestore
          .instance
          .collection("users")
@@ -449,6 +452,51 @@ void removePostImage()
      });
 
    }
+
+  File? chatImage;
+  Future<void> getChatImage()async
+  {
+    final pickedFile=await picker.pickImage(source: ImageSource.camera);
+    if(pickedFile!=null)
+    {
+      chatImage=File(pickedFile.path);
+      print(chatImage);
+      emit(SocialChatImageSucessState());
+    }
+    else
+    {
+      emit(SocialChatImageErorrState());
+      print("No image selected");
+    }
+  }
+  void uploadChatImage({
+     String? dateTime,
+    String? receiverId,
+  })
+  {
+    emit(SocialUploadChatImageLoadingState());
+    firebase_storage
+        .FirebaseStorage
+        .instance
+        .ref()
+        .child("chatImage/${Uri.file(chatImage!.path).pathSegments.last}")
+        .putFile(chatImage!)
+        .then((value) {
+
+      value.ref.getDownloadURL().then((value) {
+        print(value);
+        emit(SocialUploadChatImageSucessState());
+       sendMessage(chatImage:value,datetime:dateTime,receiverId:receiverId);
+      })
+          .catchError((e){
+        emit(SocialUploadProfileImageErorrState());
+      });
+    }).catchError((e){
+      print("________"+e.toString());
+      emit(SocialUploadProfileImageErorrState());
+    });
+
+  }
 
   }
 

@@ -77,7 +77,8 @@ class NewPostScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4.0),
                         image: DecorationImage(
                           fit: BoxFit.cover,
-                          image:FileImage(File(postImage!.path)) ),
+                          image:FileImage(File(postImage!.path))
+                        ),
                    ),
                   ),
                   Padding(

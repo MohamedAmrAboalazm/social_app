@@ -78,6 +78,10 @@ class SocialPostImagePickedErorrState extends SocialState{}
 
 class SocialPostImagePickedSucessState extends SocialState{}
 
+class SocialChatImageErorrState extends SocialState{}
+
+class SocialChatImageSucessState extends SocialState{}
+
 class SocialRemovePostImageState extends SocialState{}
 
 //chat
@@ -86,4 +90,10 @@ class SocialSendMessageSucessState extends SocialState{}
 class SocialSendMessageErorrState extends SocialState{}
 
 class SocialGetMessagesSucessState extends SocialState{}
+
+class SocialUploadChatImageLoadingState extends SocialState{}
+
+class SocialUploadChatImageSucessState extends SocialState{}
+
+class SocialUploadChatImageErorrState extends SocialState{}
 

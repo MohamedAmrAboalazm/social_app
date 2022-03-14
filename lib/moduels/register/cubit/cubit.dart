@@ -33,7 +33,7 @@ class SocialRegisterCubit extends Cubit<SocialRegisterState>{
     ;
 
   }
-  void userCreate({required String name,required String email,required String phone,required String uId,required})
+  void userCreate({required String name,required String email,required String phone,required String uId})
   {
     SocialUserModel model=SocialUserModel(
     email:email,

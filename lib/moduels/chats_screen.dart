@@ -22,7 +22,7 @@ class ChatsScreen extends StatelessWidget {
                    padding: const EdgeInsets.all(10.0),
                    child: Divider(
                      height: 1,
-                     color: Colors.grey,
+                     color: Colors.green,
                    ),
                  ) ,
                  itemCount: SocialCubit.get(context).users.length),
