@@ -57,6 +57,8 @@ dependencies:
   cloud_firestore_platform_interface: 5.4.13
   firebase_auth_platform_interface: 6.1.11
   firebase_database_platform_interface: 0.2.0+5
+  firebase_messaging: ^11.2.6
+  http: ^0.13.4
 
 dev_dependencies:
   flutter_test:

@@ -67,10 +67,6 @@ class FeedsScreen extends StatelessWidget {
     );
   }
 
-
-
-
-
   Widget buildPostItem(PostModel model,index,context) => Card(
         clipBehavior: Clip.antiAliasWithSaveLayer,
         margin: EdgeInsets.symmetric(horizontal: 8),

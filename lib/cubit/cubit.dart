@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,15 +11,17 @@ import 'package:social_app/cubit/states.dart';
 import 'package:social_app/models/Social_user_model.dart';
 import 'package:social_app/models/message_model.dart';
 import 'package:social_app/models/post_model.dart';
+import 'package:social_app/models/token_model.dart';
 import 'package:social_app/moduels/chats_screen.dart';
 import 'package:social_app/moduels/feeds_screen.dart';
 import 'package:social_app/moduels/newpost_screen.dart';
 import 'package:social_app/moduels/settings_screen.dart';
 import 'package:social_app/moduels/users_screen.dart';
+import 'package:social_app/network/remote/dio_helper.dart';
 import 'package:social_app/shared/styles/constants.dart';
 import 'package:social_app/shared/styles/icon_broken.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
+import 'package:http/http.dart' as http;
 
 class SocialCubit extends Cubit<SocialState>{
   SocialCubit() : super(SocialInitialState());
@@ -35,6 +39,7 @@ class SocialCubit extends Cubit<SocialState>{
            .then((value) {
              print(value.data());
              userModel=SocialUserModel.fromJson(value.data());
+             getToken();
              emit(SocialGetUserSuccessState());
        })
            .catchError((erorr){
@@ -81,8 +86,9 @@ class SocialCubit extends Cubit<SocialState>{
     ),
   ];
   void changeIndex(int index) {
-    if(index==1)
+    if(index==1) {
       getUsers();
+    }
      if(index==2)
        {
          emit(SocialNewPostState());
@@ -456,7 +462,7 @@ void removePostImage()
   File? chatImage;
   Future<void> getChatImage()async
   {
-    final pickedFile=await picker.pickImage(source: ImageSource.camera);
+    final pickedFile=await picker.pickImage(source: ImageSource.gallery);
     if(pickedFile!=null)
     {
       chatImage=File(pickedFile.path);
@@ -497,6 +503,137 @@ void removePostImage()
     });
 
   }
+//
+//  void notifyMessage()
+//  {
+//
+//     DioHelper.postData(url: "fcm/send",
+//         data:
+//           {
+//             "to": "eIF7mhPCTmKMwbmj768UyH:APA91bFJRPLG0blCtK0aBS3v5ftfvqlOyr5I_XVYVJNsM5QblbfIzipUsreoRI6l9P6LMrJ9zdk_WHjtLGDwhPYbRi3AngPowbzQetvz6mBlDRzoUlQLQNkWbQQo8KNHBynjaQWMN2cJ",
+//             "notification": {
+//               "title": "Mohamed Amr",
+//               "body": "message ya 3m al7g",
+//
+//             },
+//             "android": {
+//               "priority": "High"
+//             },
+//             "data": {
+//               "type": "order",
+//               "id": "87",
+//               "click_action": "FLUTTER_NOTIFICATION_CLICK"
+//             }
+//           }
+//
+//     ).then((value) {
+//
+//       emit(SocialNotifyMessageSucessState());
+//     }).catchError((e){
+//          print(e.toString());
+//       emit(SocialNotifyMessageErorrState());
+//     });
+//
+//  }
+
+  void saveToken(String? token,String? uId) async {
+    TokenModel tokenModel=TokenModel(token: token,uId: uId);
+    await FirebaseFirestore.instance
+        .collection("UserTokens")
+        .doc(userModel!.uId)
+        .set(tokenModel.toMap()).then((value) {
+   emit(SocialSaveTokenSucessState());
+    })
+      .catchError((e){
+   emit(SocialSaveTokenErorrState());
+    });
+
+  }
+  String? Token;
+
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then(
+            (token)
+        {
+          Token=token;
+          print("22"+Token.toString());
+          saveToken(Token,userModel!.uId);
+
+        }
+    );
+  }
+  void sendPushMessage({String? token, String? body, String? title}) async {
+    try {
+      await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'key=AAAA02h14ew:APA91bG7rvrJpbxTQfNLe0a9j1nVoJ8ULiMpDRriwELzBmM6Ig36wMh1y5muIl5Nmu_0pJVKcgY9GyrJ-DnUtyTQMeGTs_pCi1FloZ2fev7sgzculyBKmX48L7w1lDVcaZXxigtnlnNg',
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            'notification': <String, dynamic>{
+              'body':body,
+              'title': title
+            },
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'id': '1',
+              'status': 'done'
+            },
+            "to": token,
+          },
+        ),
+      );
+    } catch (e) {
+      print("error push notification");
+    }
+  }
+
+
+  List<TokenModel> tokens=[];
+
+  void getTokens()
+  {
+    tokens=[];
+     emit(SocialGetTokenLoadingState());
+      FirebaseFirestore
+          .instance
+          .collection("UserTokens")
+          .get()
+          .then((value) {
+        emit(SocialGetTokenSucessState());
+        value.docs.forEach((element) {
+            tokens.add(TokenModel.fromJson(element.data()));
+
+        });
+        print("11111111"+ tokens[0].token.toString());
+
+      })
+          .catchError((erorr){
+        emit(SocialGetTokenErorrState());
+      });
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   }
 

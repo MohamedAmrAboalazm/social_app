@@ -52,7 +52,7 @@ class NewPostScreen extends StatelessWidget {
                     width: 15,
                   ),
                   Expanded(
-                    child: Text("Mohamed Amr"),
+                    child: Text(SocialCubit.get(context).userModel!.name.toString()),
                   ),
                 ],
               ),

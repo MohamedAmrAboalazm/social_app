@@ -61,7 +61,7 @@ class SocialLoginScreen extends StatelessWidget {
                               if(formKey.currentState!.validate())
                               {
                                  SocialLoginCubit.get(context)
-                                   .userLogin(email: emailcontroller.text, password: passwordcontroller.text);
+                                   .userLogin(email: emailcontroller.text, password: passwordcontroller.text,context: context);
                               }
                             },
                             validator: (String? value){
@@ -88,7 +88,7 @@ class SocialLoginScreen extends StatelessWidget {
                               if(formKey.currentState!.validate())
                               {
                                  SocialLoginCubit.get(context)
-                                     .userLogin(email: emailcontroller.text, password: passwordcontroller.text);
+                                     .userLogin(email: emailcontroller.text, password: passwordcontroller.text,context: context);
                               }
                             },
                             validator: (String? value){
@@ -105,7 +105,7 @@ class SocialLoginScreen extends StatelessWidget {
                             if(formKey.currentState!.validate())
                             {
                                SocialLoginCubit.get(context)
-                               .userLogin(email: emailcontroller.text, password: passwordcontroller.text);
+                               .userLogin(email: emailcontroller.text, password: passwordcontroller.text,context:context);
 
 
                             }

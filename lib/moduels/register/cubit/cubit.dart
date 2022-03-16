@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/cubit/cubit.dart';
 import 'package:social_app/models/Social_user_model.dart';
 import 'package:social_app/moduels/register/cubit/states.dart';
 import 'package:social_app/network/local/cache_helper.dart';
@@ -25,7 +26,7 @@ class SocialRegisterCubit extends Cubit<SocialRegisterState>{
     .then((value) {
       print(value.user!.email);
       print(value.user!.uid);
-      userCreate(name: name, email: email, phone: phone, uId: value.user!.uid,);
+      userCreate(name: name, email: email, phone: phone, uId: value.user!.uid);
     }).catchError((erorr){
       print(erorr.toString());
       emit(SocialRegisterErorrState(erorr.toString()));

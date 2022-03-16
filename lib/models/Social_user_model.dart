@@ -9,6 +9,7 @@ class SocialUserModel
   String? cover;
   bool? isEmailVerified;
 
+
   SocialUserModel({this.name, this.email, this.phone, this.uId,this.isEmailVerified,this.image,this.bio,this.cover});
 
   SocialUserModel.fromJson( Map<String,dynamic>? json)

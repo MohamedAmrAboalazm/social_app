@@ -3,6 +3,7 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/cubit/cubit.dart';
 import 'package:social_app/moduels/login/social_login_screen.dart';
 import 'package:social_app/shared/components.dart';
 import 'package:social_app/social_layout.dart';
@@ -29,7 +30,7 @@ class SocialRegisterScreen extends StatelessWidget {
             }
             if(state is SocialCreateUserSucessState)
             {
-              navigateAndFinsh(context, SocialLayout());
+              navigateAndFinsh(context, SocialLoginScreen());
             }
 
           },

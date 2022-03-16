@@ -7,6 +7,7 @@ import 'package:social_app/cubit/cubit.dart';
 import 'package:social_app/cubit/states.dart';
 import 'package:social_app/models/Social_user_model.dart';
 import 'package:social_app/models/message_model.dart';
+import 'package:social_app/models/token_model.dart';
 import 'package:social_app/moduels/chat_image_screen.dart';
 import 'package:social_app/shared/components.dart';
 import 'package:social_app/shared/styles/colors.dart';
@@ -15,6 +16,7 @@ import 'package:social_app/shared/styles/icon_broken.dart';
 class ChatDetailsScreen extends StatelessWidget {
   var textController=TextEditingController();
    SocialUserModel? model;
+  TokenModel? tokenModel;
   ChatDetailsScreen(this.model);
   @override
   Widget build(BuildContext context) {
@@ -24,9 +26,12 @@ class ChatDetailsScreen extends StatelessWidget {
         SocialCubit.get(context)
             .getMessages(receiverId: model!.uId);
 
+
         return BlocConsumer<SocialCubit,SocialState>(
           listener: (context, state) {},
           builder: (context, state) {
+           var userModel= SocialCubit.get(context).userModel;
+
             return
               Scaffold(
 
@@ -45,7 +50,8 @@ class ChatDetailsScreen extends StatelessWidget {
                   ),
                 ),
                 body: ConditionalBuilder(
-                  condition: SocialCubit.get(context).messages.length>0,
+                  //SocialCubit.get(context).messages.length>0,
+                  condition: true,
                   builder: (context) => Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Column(
@@ -54,6 +60,7 @@ class ChatDetailsScreen extends StatelessWidget {
                          child: Padding(
                            padding: const EdgeInsets.symmetric(vertical: 15),
                            child: ListView.separated(
+
                                itemBuilder: (context, index)
                                {
 
@@ -97,8 +104,17 @@ class ChatDetailsScreen extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(horizontal: 15),
                                   child: TextFormField(
                                     onFieldSubmitted: (s){
-                                      SocialCubit.get(context).sendMessage(text:textController.text,receiverId:model!.uId ,datetime:DateTime.now().toString(),);
-                                      textController.text="";
+                                      for(int i=0;i<SocialCubit.get(context).tokens.length;i++)
+                                      {
+                                        if(SocialCubit.get(context).tokens[i].uId==model!.uId)
+                                        {
+                                          SocialCubit.get(context).sendMessage(text:textController.text,receiverId:model!.uId ,datetime:DateTime.now().toString());
+                                          SocialCubit.get(context).sendPushMessage(token:SocialCubit.get(context).tokens[i].token
+                                              ,body:textController.text ,title:userModel!.name);
+                                          textController.text="";
+                                          print(SocialCubit.get(context).tokens[i].token);
+                                        }
+                                      }
                                     },
                                     controller: textController,
                                     decoration: InputDecoration(
@@ -125,9 +141,17 @@ class ChatDetailsScreen extends StatelessWidget {
                                 height: 50,
                                 color: defaultColor,
                                 child: MaterialButton(onPressed: (){
-
-                                  SocialCubit.get(context).sendMessage(text:textController.text,receiverId:model!.uId ,datetime:DateTime.now().toString());
-                                  textController.text="";
+                                  for(int i=0;i<SocialCubit.get(context).tokens.length;i++)
+                                  {
+                                    if(SocialCubit.get(context).tokens[i].uId==model!.uId)
+                                    {
+                                      SocialCubit.get(context).sendMessage(text:textController.text,receiverId:model!.uId ,datetime:DateTime.now().toString());
+                                      SocialCubit.get(context).sendPushMessage(token:SocialCubit.get(context).tokens[i].token
+                                          ,body:textController.text ,title:userModel!.name);
+                                        textController.text="";
+                                        print(SocialCubit.get(context).tokens[i].token);
+                                    }
+                                  }
                                 },
                                   minWidth: 1,
                                   child: Icon(IconBroken.Send,color: Colors.white,size: 16,),
@@ -164,7 +188,14 @@ class ChatDetailsScreen extends StatelessWidget {
             vertical: 5,
             horizontal: 10
         ),
-        child: Text(message.text.toString())
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(message.text.toString()),
+            SizedBox(height: 5,),
+            Text(message.dateTime.toString(),style:TextStyle(color: Colors.grey,fontSize: 10),),
+          ],
+        )
     ),
   );
   Widget buildMyMessage(MessageModel message)=> Align(
@@ -183,7 +214,16 @@ class ChatDetailsScreen extends StatelessWidget {
             vertical: 5,
             horizontal: 10
         ),
-        child: Text(message.text.toString())
+        child: Column(
+             crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(message.text.toString()),
+            SizedBox(height: 5,),
+            Text(message.dateTime.toString(),style:TextStyle(color: Colors.grey,fontSize: 10),),
+
+
+          ],
+        )
     ),
   );
   Widget buildMyphotoMessage(MessageModel message,context)=> Align(
@@ -224,6 +264,8 @@ class ChatDetailsScreen extends StatelessWidget {
       ),
     ),
   );
+
+
 
 
 }

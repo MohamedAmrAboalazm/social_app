@@ -97,3 +97,17 @@ class SocialUploadChatImageSucessState extends SocialState{}
 
 class SocialUploadChatImageErorrState extends SocialState{}
 
+//notifaction
+class SocialNotifyMessageSucessState extends SocialState {}
+
+class SocialNotifyMessageErorrState extends SocialState {}
+
+class SocialSaveTokenSucessState extends SocialState{}
+
+class SocialSaveTokenErorrState extends SocialState{}
+
+class SocialGetTokenLoadingState extends SocialState{}
+
+class SocialGetTokenSucessState extends SocialState{}
+
+class SocialGetTokenErorrState extends SocialState{}
