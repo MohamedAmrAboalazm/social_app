@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,10 @@ import 'package:social_app/cubit/states.dart';
 import 'package:social_app/models/Social_user_model.dart';
 import 'package:social_app/models/message_model.dart';
 import 'package:social_app/models/token_model.dart';
+import 'package:social_app/moduels/agora_manager.dart';
 import 'package:social_app/moduels/chat_image_screen.dart';
+import 'package:social_app/moduels/vedio_call_screen.dart';
+import 'package:social_app/moduels/vediocall.dart';
 import 'package:social_app/shared/components.dart';
 import 'package:social_app/shared/styles/colors.dart';
 import 'package:social_app/shared/styles/icon_broken.dart';
@@ -27,6 +29,8 @@ class ChatDetailsScreen extends StatelessWidget {
             .getMessages(receiverId: model!.uId);
 
 
+
+
         return BlocConsumer<SocialCubit,SocialState>(
           listener: (context, state) {},
           builder: (context, state) {
@@ -36,6 +40,26 @@ class ChatDetailsScreen extends StatelessWidget {
               Scaffold(
 
                 appBar: AppBar(
+                  actions: [
+                    IconButton(onPressed: (){
+                      for(int i=0;i<SocialCubit.get(context).tokens.length;i++)
+                      {
+                        if(SocialCubit.get(context).tokens[i].uId==model!.uId)
+                        {
+                          print(model!.uId);
+                          print(model!.name
+                          );
+
+                          SocialCubit.get(context).sendPushMessage(token:SocialCubit.get(context).tokens[i].token
+                              ,body:"Caling..." ,title:userModel!.name,model: userModel,click:"vedio",channelName:AgoraManager.channelName,
+                            channelToken: AgoraManager.token
+                          );
+                          print(SocialCubit.get(context).tokens[i].token);
+                        }
+                      }
+                      navigateTo(context, VideoCall(AgoraManager.channelName,AgoraManager.token));
+                    }, icon: Icon(Icons.video_call,size: 30,)),
+                  ],
                   titleSpacing: 0.0,
                   title: Row(
                     children: [
@@ -45,7 +69,7 @@ class ChatDetailsScreen extends StatelessWidget {
 
                       ),
                       SizedBox(width: 15,),
-                      Text(model!.name.toString()),
+                      Expanded(child: Text(model!.name.toString())),
                     ],
                   ),
                 ),
@@ -60,7 +84,7 @@ class ChatDetailsScreen extends StatelessWidget {
                          child: Padding(
                            padding: const EdgeInsets.symmetric(vertical: 15),
                            child: ListView.separated(
-
+                              reverse: true,
                                itemBuilder: (context, index)
                                {
 
@@ -108,9 +132,14 @@ class ChatDetailsScreen extends StatelessWidget {
                                       {
                                         if(SocialCubit.get(context).tokens[i].uId==model!.uId)
                                         {
+                                          print(model!.uId);
+                                          print(model!.name
+                                          );
+
                                           SocialCubit.get(context).sendMessage(text:textController.text,receiverId:model!.uId ,datetime:DateTime.now().toString());
                                           SocialCubit.get(context).sendPushMessage(token:SocialCubit.get(context).tokens[i].token
-                                              ,body:textController.text ,title:userModel!.name);
+                                              ,body:textController.text ,title:userModel!.name,model: userModel,click:"chat",channelName:AgoraManager.channelName,
+                                              channelToken: AgoraManager.token );
                                           textController.text="";
                                           print(SocialCubit.get(context).tokens[i].token);
                                         }
@@ -147,7 +176,8 @@ class ChatDetailsScreen extends StatelessWidget {
                                     {
                                       SocialCubit.get(context).sendMessage(text:textController.text,receiverId:model!.uId ,datetime:DateTime.now().toString());
                                       SocialCubit.get(context).sendPushMessage(token:SocialCubit.get(context).tokens[i].token
-                                          ,body:textController.text ,title:userModel!.name);
+                                          ,body:textController.text ,title:userModel!.name,model: userModel,click:"chat",channelName:AgoraManager.channelName,
+                                          channelToken: AgoraManager.token);
                                         textController.text="";
                                         print(SocialCubit.get(context).tokens[i].token);
                                     }
@@ -229,7 +259,7 @@ class ChatDetailsScreen extends StatelessWidget {
   Widget buildMyphotoMessage(MessageModel message,context)=> Align(
     alignment: AlignmentDirectional.centerEnd,
     child: Container(
-      height: 200,
+      height: 400,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
@@ -239,7 +269,7 @@ class ChatDetailsScreen extends StatelessWidget {
 
         ),
         image: DecorationImage(
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
             image:NetworkImage(message.chatImage.toString())
         ),
       ),
@@ -248,7 +278,7 @@ class ChatDetailsScreen extends StatelessWidget {
   Widget buildphotoMessage(MessageModel message,context)=> Align(
     alignment: AlignmentDirectional.centerEnd,
     child: Container(
-      height: 200,
+      height: 400,
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
@@ -258,7 +288,7 @@ class ChatDetailsScreen extends StatelessWidget {
 
         ),
         image: DecorationImage(
-            fit: BoxFit.cover,
+            fit: BoxFit.fill,
             image:NetworkImage(message.chatImage.toString())
         ),
       ),

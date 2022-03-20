@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:social_app/cubit/states.dart';
 import 'package:social_app/models/Social_user_model.dart';
 import 'package:social_app/models/message_model.dart';
@@ -17,11 +20,12 @@ import 'package:social_app/moduels/feeds_screen.dart';
 import 'package:social_app/moduels/newpost_screen.dart';
 import 'package:social_app/moduels/settings_screen.dart';
 import 'package:social_app/moduels/users_screen.dart';
-import 'package:social_app/network/remote/dio_helper.dart';
 import 'package:social_app/shared/styles/constants.dart';
 import 'package:social_app/shared/styles/icon_broken.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:http/http.dart' as http;
+
+import '../moduels/agora_manager.dart';
 
 class SocialCubit extends Cubit<SocialState>{
   SocialCubit() : super(SocialInitialState());
@@ -54,7 +58,6 @@ class SocialCubit extends Cubit<SocialState>{
     NewPostScreen(),
     UsersScreen(),
     SettingsScreen(),
-
   ];
   List<String> Titles = [
     "Home",
@@ -102,7 +105,7 @@ class SocialCubit extends Cubit<SocialState>{
   var picker =ImagePicker();
   Future<void> getProfileImage()async
   {
-    final pickedFile=await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile=await picker.pickImage(source: ImageSource.gallery,imageQuality: 25,);
     if(pickedFile!=null)
     {
       profileImage=File(pickedFile.path);
@@ -118,7 +121,7 @@ class SocialCubit extends Cubit<SocialState>{
   File? coverImage;
   Future<void> getCoverImage()async
   {
-    final pickedFile=await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile=await picker.pickImage(source: ImageSource.gallery,imageQuality:25);
     if(pickedFile!=null)
     {
       coverImage=File(pickedFile.path);
@@ -230,7 +233,7 @@ FirebaseFirestore.instance
   File? postImage;
   Future<void> getPostImage()async
   {
-    final pickedFile=await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile=await picker.pickImage(source: ImageSource.gallery,imageQuality: 25);
     if(pickedFile!=null)
     {
       postImage=File(pickedFile.path);
@@ -296,6 +299,7 @@ FirebaseFirestore.instance
         .collection("posts")
         .add(model.toMap())
         .then((value){
+          getPosts();
       emit(SocialCreatePostSucessState());
     })
         .catchError((erorr){
@@ -312,7 +316,8 @@ FirebaseFirestore.instance
    FirebaseFirestore
        .instance
        .collection("posts")
-       .get()
+        .orderBy("dateTime",descending: true)
+         .get()
        .then((value) {
          value.docs.forEach((element) {
            element
@@ -446,7 +451,7 @@ void removePostImage()
          .collection("chat")
          .doc(receiverId)
          .collection("messages")
-         .orderBy("dateTime")
+         .orderBy("dateTime",descending: true)
          .snapshots()
          .listen((event) {
            messages=[];
@@ -462,7 +467,7 @@ void removePostImage()
   File? chatImage;
   Future<void> getChatImage()async
   {
-    final pickedFile=await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile=await picker.pickImage(source: ImageSource.camera,imageQuality: 25,maxHeight: 400);
     if(pickedFile!=null)
     {
       chatImage=File(pickedFile.path);
@@ -503,7 +508,7 @@ void removePostImage()
     });
 
   }
-//
+
 //  void notifyMessage()
 //  {
 //
@@ -562,7 +567,7 @@ void removePostImage()
         }
     );
   }
-  void sendPushMessage({String? token, String? body, String? title}) async {
+  void sendPushMessage({String? token, String? body, String? title, SocialUserModel? model,String? click,String? channelName,String? channelToken}) async {
     try {
       await http.post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
@@ -577,10 +582,13 @@ void removePostImage()
               'title': title
             },
             'priority': 'high',
-            'data': <String, dynamic>{
-              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'data': <String, String>{
+              'click_action': '$click',
               'id': '1',
-              'status': 'done'
+              'status': 'done',
+              'channelName':channelName!,
+              'channelToken':channelToken!,
+              'screen':json.encode(model!.toMap()) ,
             },
             "to": token,
           },
@@ -615,25 +623,33 @@ void removePostImage()
         emit(SocialGetTokenErorrState());
       });
   }
+  late int remoteUId=0;
+  late RtcEngine engine;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  Future<void> initAgora(context,channelName,channelToken) async {
+    await [Permission.microphone, Permission.camera].request();
+    engine = await RtcEngine.create(AgoraManager.appId);
+    engine.enableVideo();
+    engine.setEventHandler(
+      RtcEngineEventHandler(
+        joinChannelSuccess: (String channel, int uid, int elapsed) {
+          print('local user $uid joined successfully');
+        },
+        userJoined: (int uid, int elapsed) {
+// player.stop();
+          print('remote user $uid joined successfully');
+           remoteUId=uid;
+        },
+        userOffline: (int uid, UserOfflineReason reason) {
+          print('remote user $uid left call');
+          remoteUId = 0;
+          Navigator.of(context).pop(true);
+        },
+      ),
+    );
+    await engine.joinChannel(
+        channelToken, channelName, null, 0);
   }
+
+}
 

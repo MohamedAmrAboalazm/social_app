@@ -7,7 +7,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/cubit/cubit.dart';
 import 'package:social_app/cubit/states.dart';
 import 'package:social_app/models/post_model.dart';
+import 'package:social_app/moduels/comment_screen.dart';
 import 'package:social_app/shared/styles/icon_broken.dart';
+
+import '../shared/components.dart';
 
 class FeedsScreen extends StatelessWidget {
 
@@ -287,7 +290,8 @@ class FeedsScreen extends StatelessWidget {
                         ],
                       ),
                       onTap: () {
-                        SocialCubit.get(context).CommentPost(SocialCubit.get(context).postId[index]);
+                        navigateTo(context,CommentScreen());
+                       // SocialCubit.get(context).CommentPost(SocialCubit.get(context).postId[index]);
                       },
                     ),
                   ),
